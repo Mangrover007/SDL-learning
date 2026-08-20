@@ -65,9 +65,15 @@ bool init()
     return true;
 }
 
-bool loadMedia()
+void close()
 {
-    return true;
+    SDL_DestroyWindow(gWindow);
+    SDL_DestroyRenderer(gRenderer);
+    TTF_CloseFont(gFont);
+    
+    TTF_Quit();
+    IMG_Quit();
+    SDL_Quit();
 }
 
 int main(int argc, char** argv)
@@ -96,7 +102,6 @@ int main(int argc, char** argv)
 	    }
 	    else if (e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP || e.type == SDL_MOUSEMOTION)
 	    {
-		// printf("RelX: %d, RelY: %d\n", e.motion.xrel, e.motion.yrel);
 		button.handleEvent(&e);
 	    }
 	}
@@ -108,6 +113,8 @@ int main(int argc, char** argv)
 
 	SDL_RenderPresent(gRenderer);
     }
+
+    close();
 
     return 0;
 }
