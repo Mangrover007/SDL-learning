@@ -65,11 +65,6 @@ bool init()
     return true;
 }
 
-bool loadMedia()
-{
-    return true;
-}
-
 int main(int argc, char** argv)
 {
     if (!init())
@@ -96,7 +91,6 @@ int main(int argc, char** argv)
 	    }
 	    else if (e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP || e.type == SDL_MOUSEMOTION)
 	    {
-		// printf("RelX: %d, RelY: %d\n", e.motion.xrel, e.motion.yrel);
 		button.handleEvent(&e);
 	    }
 	}

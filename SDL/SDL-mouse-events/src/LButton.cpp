@@ -7,9 +7,6 @@ bool isMouseInsideButton(int width, int height, SDL_Point* curPos)
     int x, y;
     SDL_GetMouseState(&x, &y);
 
-    printf("Text position: %d, %d\n", curPos->x, curPos->y);
-    printf("Mouse position: %d, %d\n", x, y);
-
     if ((x < curPos->x) || (x > curPos->x + width))
     {
 	inside = false;
@@ -47,7 +44,6 @@ LButton::LButton(const std::string& innerText)
 
 void LButton::setPosition(int x, int y)
 {
-    printf("Moving... %d %d\n", x, y);
     mPos.x = std::max(0, mPos.x + x);
     mPos.x = std::min(mPos.x, SCREEN_WIDTH - this->mButtonTexture.getWidth());
 
@@ -59,8 +55,6 @@ void LButton::handleEvent(SDL_Event* e)
 {
     if (isMouseInsideButton(this->mButtonTexture.getWidth(), this->mButtonTexture.getHeight(), &this->mPos))
     {
-	printf("Button pressed at %d %d. Processing button press...\n", e->button.x, e->button.y);
-
 	switch(e->type)
 	{
 	case SDL_MOUSEBUTTONDOWN:
