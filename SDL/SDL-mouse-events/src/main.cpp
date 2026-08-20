@@ -65,6 +65,17 @@ bool init()
     return true;
 }
 
+void close()
+{
+    SDL_DestroyWindow(gWindow);
+    SDL_DestroyRenderer(gRenderer);
+    TTF_CloseFont(gFont);
+    
+    TTF_Quit();
+    IMG_Quit();
+    SDL_Quit();
+}
+
 int main(int argc, char** argv)
 {
     if (!init())
@@ -102,6 +113,8 @@ int main(int argc, char** argv)
 
 	SDL_RenderPresent(gRenderer);
     }
+
+    close();
 
     return 0;
 }
