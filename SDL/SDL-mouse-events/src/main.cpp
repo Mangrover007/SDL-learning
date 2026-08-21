@@ -86,7 +86,7 @@ int main(int argc, char** argv)
 
     printf("Successfully initialized\n");
 
-    LButton button = LButton("ようこそ。私のソールソサアティへ！");
+    LButton button = LButton("ようこそ、私のソウルソサエティへ。");
     button.setPosition(0, 0);
 
     bool quit = false;
