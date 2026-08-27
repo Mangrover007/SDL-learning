@@ -2,205 +2,220 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
-#include <sstream>
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 640
+#include <stdio.h>
 
-const char* fontPath = "/usr/share/fonts/OTF/ipamp.ttf";
+
+#include "../include/LButton.h"
+#include "../include/LTimer.h"
+
 
 SDL_Window* gWindow;
 SDL_Renderer* gRenderer;
 TTF_Font* gFont;
 
-SDL_Texture* gRestartTimerTexture;
-int gRestartTimerWidth;
-int gRestartTimerHeight;
+
+SDL_Color SDL_COL_BLACK = SDL_Color{0x00, 0x00, 0x00, 0xFF};
+SDL_Color SDL_COL_WHITE = SDL_Color{0xFF, 0xFF, 0xFF, 0xFF};
+
+
+LTexture infoText1; // press S to start/stop the timer
+LTexture infoText2; // perss P to pause/resume the timer
+
+LTexture gTimerTexture;
+
+#include "../include/globals.h"
+
+
+const char* fontPath = "/usr/share/fonts/OTF/ipam.ttf";
+const char* WINDOW_NAME = "HELLO timer :D";
+
 
 bool init()
 {
-    bool success = true;
-
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-	printf("Failed to initialize SDL: %s\n", SDL_GetError());
-	success = false;
+	printf("Error initializing SDL: %s\n", SDL_GetError());
+	return false;
     }
 
-    if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG)
+    int IMG_INIT_FLAGS = IMG_INIT_PNG | IMG_INIT_JPG;
+    if (IMG_Init(IMG_INIT_FLAGS) != IMG_INIT_FLAGS)
     {
-	printf("Failed to initialize SDL_image: %s\n", IMG_GetError());
-	success = false;
+	printf("Error initializing SDL_image: %s\n", SDL_GetError());
+	return false;
     }
 
-    if (TTF_Init() < 0)
+    if (TTF_Init() != 0)
     {
-	printf("Failed to initialize SDL_ttf: %s\n", TTF_GetError());
-	success = false;
+	printf("Error initializing SDL_ttf: %s\n", SDL_GetError());
+	return false;
     }
 
     gWindow = SDL_CreateWindow(
-	    "HELLO TIMERS :D",
-	    SDL_WINDOWPOS_UNDEFINED,
-	    SDL_WINDOWPOS_UNDEFINED,
-	    SCREEN_WIDTH,
-	    SCREEN_HEIGHT,
-	    SDL_WINDOW_SHOWN
+		WINDOW_NAME,
+		SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_UNDEFINED,
+		SCREEN_WIDTH,
+		SCREEN_HEIGHT,
+		SDL_WINDOW_SHOWN
 	    );
+
+    if (gWindow == nullptr)
+    {
+	printf("Error creating SDL window: %s\n", SDL_GetError());
+	return false;
+    }
 
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
 
-    gFont = TTF_OpenFont(fontPath, 28);
-
-    if (gWindow == nullptr || gRenderer == nullptr || gFont == nullptr)
+    if (gRenderer == nullptr)
     {
-	printf("Something failed idk.\n");
-	success = false;
+	printf("Error creating Renderer for SDL Window: %s\n", SDL_GetError());
+	return false;
     }
 
-    return success;
+    gFont = TTF_OpenFont(fontPath, 28);
+
+    if (gFont == nullptr)
+    {
+	printf("Failed to load font: %s\n", TTF_GetError());
+	return false;
+    }
+
+    return true;
 }
+
 
 void close()
 {
     SDL_DestroyWindow(gWindow);
     SDL_DestroyRenderer(gRenderer);
-    SDL_DestroyTexture(gRestartTimerTexture);
 
     TTF_CloseFont(gFont);
-
+    
     TTF_Quit();
     IMG_Quit();
-
     SDL_Quit();
 }
 
-bool loadText(const char* text)
-{
-    SDL_DestroyTexture(gRestartTimerTexture);
 
+bool loadMedia()
+{
     bool success = true;
 
-    SDL_Surface* restartSurface = TTF_RenderText_Solid(gFont, text, SDL_Color{0x00, 0x00, 0x00, 0xFF});
-    if (restartSurface == nullptr)
+    infoText1 = LTexture();
+
+    if (!infoText1.loadTTF("Press S to start/stop the timer", SDL_COL_BLACK))
     {
-	printf("Error loading text into SDL_Surface: %s\nError:%s\n", text, TTF_GetError());
+	printf("Failed to load text.\n");
 	success = false;
     }
 
-    SDL_Texture* restartTexture = SDL_CreateTextureFromSurface(gRenderer, restartSurface);
-    if (restartTexture == nullptr)
+    if (!infoText2.loadTTF("Press P to pause/resume the timer", SDL_COL_BLACK))
     {
-	printf("Error converting SDL_Surface into SDL_Texture: %s\n", SDL_GetError());
+	printf("Failed to load text.\n");
 	success = false;
     }
-    else
-    {
-	gRestartTimerWidth = restartSurface->w;
-	gRestartTimerHeight = restartSurface->h;
-    }
-
-    SDL_FreeSurface(restartSurface);
-    
-    gRestartTimerTexture = restartTexture;
 
     return success;
 }
 
-void timerLoop()
+
+void handleEvent(SDL_Event& e)
+{
+    // write custom events handlers here
+    
+}
+
+
+#include <sstream>
+
+void mainLoop()
 {
     bool quit = false;
     SDL_Event e;
 
-    Uint32 timerStart = 0;
-    Uint32 timerDrift = 0;
-    Uint32 timerDriftStart = 0;
-    Uint32 oldDrift = 0;
-
-    SDL_Rect dest;
-
+    LTimer timer = LTimer();
     std::stringstream timerText;
-
-    bool updateDrift = false;
 
     while (quit == false)
     {
-	Uint32 tick = SDL_GetTicks();
-
 	while (SDL_PollEvent(&e) != 0)
 	{
 	    if (e.type == SDL_QUIT)
 	    {
 		quit = true;
 	    }
-	    else if (e.type == SDL_KEYDOWN)
+	    else
 	    {
-		if (e.key.keysym.sym == SDLK_RETURN)
+		if (e.type == SDL_KEYDOWN)
 		{
-		    timerStart = tick;
-		    timerDrift = 0;
-		    timerDriftStart = tick;
-		    oldDrift = 0;
-		    updateDrift = false;
-		}
-		else if (e.key.keysym.sym == SDLK_SPACE)
-		{
-		    updateDrift = !updateDrift;
-		    timerDriftStart = tick;
-		    if (!updateDrift)
+		    switch (e.key.keysym.sym)
 		    {
-			oldDrift = timerDrift;
+			case SDLK_s:
+			    if (!timer.isStarted())
+			    {
+				timer.start();
+			    }
+			    else
+			    {
+				timer.stop();
+			    }
+			    break;
+			case SDLK_p:
+			    if (!timer.isPaused())
+			    {
+				timer.pause();
+			    }
+			    else
+			    {
+				timer.unpause();
+			    }
+			    break;
 		    }
 		}
 	    }
 	}
 
-	if (updateDrift)
-	{
-	    timerDrift = tick - timerDriftStart + oldDrift;
-	}
-
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
 
-	timerText.str("");
-	timerText << "Press ENTER to restart the timer.";
-
-	if (!loadText(timerText.str().c_str()))
-	{
-	    printf("FAILED TO LOAD TEXT IDK\n");
-	    return;
-	}
-
-	dest = SDL_Rect{SCREEN_WIDTH / 2 - gRestartTimerWidth / 2, 0, gRestartTimerWidth, gRestartTimerHeight}; 
-	SDL_RenderCopy(gRenderer, gRestartTimerTexture, nullptr, &dest);
+	// write code here
+	infoText1.render((SCREEN_WIDTH - infoText1.getWidth()) / 2, 0);
+	infoText2.render((SCREEN_WIDTH - infoText2.getWidth()) / 2, infoText1.getHeight() + 5);
 
 	timerText.str("");
-	timerText << "Time: " << tick - timerStart - timerDrift;
+	timerText << timer.getTicks();
 
-	loadText(timerText.str().c_str());
-
-	if (!loadText(timerText.str().c_str()))
-	{
-	    printf("FAILED TO LOAD TEXT IDK\n");
-	    return;
-	}
-	
-	dest = SDL_Rect{SCREEN_WIDTH / 2 - gRestartTimerWidth / 2, SCREEN_HEIGHT / 2 - gRestartTimerHeight / 2, gRestartTimerWidth, gRestartTimerHeight}; 
-	SDL_RenderCopy(gRenderer, gRestartTimerTexture, nullptr, &dest);
+	gTimerTexture.loadTTF(timerText.str().c_str(), SDL_COL_BLACK);
+	gTimerTexture.render((SCREEN_WIDTH - gTimerTexture.getWidth()) / 2, (SCREEN_HEIGHT - gTimerTexture.getHeight()) / 2);
 
 	SDL_RenderPresent(gRenderer);
     }
+
+    printf("Exiting main loop...\n");
 }
+
 
 int main(int argc, char** argv)
 {
     if (!init())
     {
+	printf("Could not initialize the required libraries!\n");
 	return -1;
     }
 
-    timerLoop();
+    if (!loadMedia())
+    {
+	printf("Failed to load all media.\n");
+	return -1;
+    }
+
+    printf("Successfully initialized\n");
+    printf("Starting main loop...\n");
+
+    mainLoop();
 
     close();
 
