@@ -28,6 +28,8 @@ void LTimer::start()
 	mStartTick = SDL_GetTicks();
 	mPausedTick = 0;
     }
+
+    printf("Timer started: %d\n", mStartTick);
 }
 
 void LTimer::stop()
@@ -47,7 +49,6 @@ void LTimer::pause()
     if (mStarted && !mPaused)
     {
 	mPaused = true;
-
 	mPausedTick = SDL_GetTicks();
     }
 }
@@ -56,22 +57,29 @@ void LTimer::unpause()
 {
     if (mStarted && mPaused)
     {
+	mPaused = false;
+
 	Uint32 resume_tick = SDL_GetTicks();
 
-	Uint32 diff = mPausedTick - mStarted;
-	mStarted = resume_tick - diff;
+	Uint32 diff = mPausedTick - mStartTick;
+	mStartTick = resume_tick - diff;
     }
 }
 
 Uint32 LTimer::getTicks()
 {
+    if (!mStarted)
+    {
+	return 0;
+    }
+
     Uint32 ticks = SDL_GetTicks();
 
     if (mPaused)
     {
-	return mPausedTick - mStarted;
+	return mPausedTick - mStartTick;
     }
 
-    return ticks - mStarted;
+    return ticks - mStartTick;
 }
 
