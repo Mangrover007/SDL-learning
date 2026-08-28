@@ -2,6 +2,7 @@
 // IM TIRED OF WRITING EVERYTHING BY HAND JUST LET ME GET TO THE FUN PART
 
 #include <SDL2/SDL.h> // need this for Uint32 type
+#include <chrono>
 
 class LTimer
 {
@@ -16,7 +17,7 @@ class LTimer
         void unpause();
 
         // Gets the timer's time
-        Uint32 getTicks();
+        std::chrono::duration<long, std::ratio<1, 1000000000>> getTicks();
 
         // Checks the status of the timer
         bool isStarted();
@@ -24,10 +25,12 @@ class LTimer
 
     private:
         // The clock tick when the timer started
-        Uint32 mStartTick;
+	std::chrono::steady_clock::time_point mStartTick;
 
         // The clock tick when the timer was paused
-        Uint32 mPausedTick;
+	std::chrono::steady_clock::time_point mPausedTick;
+
+	std::chrono::steady_clock::time_point mInitTick;
 
         // The timer status
         bool mPaused;

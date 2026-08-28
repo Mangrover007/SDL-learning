@@ -1,11 +1,16 @@
 #include "../include/LTimer.h"
 
+
+std::chrono::steady_clock::time_point ZERO{};
+
 LTimer::LTimer()
 {
-    mStartTick = 0;
-    mPausedTick = 0;
+    mStartTick = ZERO;
+    mPausedTick = ZERO;
     mPaused = false;
     mStarted = false;
+
+    mInitTick = std::chrono::steady_clock::now();
 }
 
 bool LTimer::isStarted()
@@ -25,11 +30,12 @@ void LTimer::start()
 	mStarted = true;
 	mPaused = false;
 
-	mStartTick = SDL_GetTicks();
-	mPausedTick = 0;
+	mStartTick = std::chrono::steady_clock::now();
+	mPausedTick = ZERO;
     }
 
-    printf("Timer started: %d\n", mStartTick);
+    std::chrono::duration<long, std::nano> d = mStartTick - ZERO;
+    printf("Timer started: %ld\n", d.count());
 }
 
 void LTimer::stop()
@@ -39,8 +45,8 @@ void LTimer::stop()
 	mStarted = false;
 	mPaused = false;
 
-	mStartTick = 0;
-	mPausedTick = 0;
+	mStartTick = ZERO;
+	mPausedTick = ZERO;
     }
 }
 
@@ -49,7 +55,7 @@ void LTimer::pause()
     if (mStarted && !mPaused)
     {
 	mPaused = true;
-	mPausedTick = SDL_GetTicks();
+	mPausedTick = std::chrono::steady_clock::now();
     }
 }
 
@@ -59,21 +65,21 @@ void LTimer::unpause()
     {
 	mPaused = false;
 
-	Uint32 resume_tick = SDL_GetTicks();
+	std::chrono::steady_clock::time_point resume_tick = std::chrono::steady_clock::now();
 
-	Uint32 diff = mPausedTick - mStartTick;
+	std::chrono::duration diff = mPausedTick - mStartTick;
 	mStartTick = resume_tick - diff;
     }
 }
 
-Uint32 LTimer::getTicks()
+std::chrono::duration<long, std::nano> LTimer::getTicks()
 {
     if (!mStarted)
     {
-	return 0;
+	return ZERO - ZERO;
     }
 
-    Uint32 ticks = SDL_GetTicks();
+    std::chrono::steady_clock::time_point ticks = std::chrono::steady_clock::now();
 
     if (mPaused)
     {

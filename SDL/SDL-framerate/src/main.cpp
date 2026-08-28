@@ -59,6 +59,7 @@ bool init()
 	return false;
     }
 
+    // gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     if (gRenderer == nullptr)
@@ -134,8 +135,15 @@ void mainLoop()
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
 
+	auto idk = std::chrono::duration_cast<std::chrono::seconds>(fpsTimer.getTicks()).count();
+	printf("Calculating ticks / millisecond\n");
+	printf("%ld %d\n", idk, framesCounted);
+
 	// write code here
-	fps = framesCounted / (fpsTimer.getTicks() / 1000.f);
+	if (idk != 0)
+	{
+	    fps = framesCounted / (idk);
+	}
 
 	fpsText.str("");
 	fpsText << "FPS: " << fps;
