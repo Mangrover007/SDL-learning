@@ -15,7 +15,7 @@ SDL_Surface* gImageSurface = nullptr;
 // In game development, it is better to write code in as modular
 // of a way as you can. Make functions that are reusable.
 
-const char* IMAGE_PATH = "/home/mango/personal/emulator/SDL/SDL-images/assets/mgsvtpp-ddog.bmp";
+const char* IMAGE_PATH = "/home/mango/personal/SDL-learning/SDL/SDL-images/assets/mgsvtpp-ddog.bmp";
 
 bool init()
 {
