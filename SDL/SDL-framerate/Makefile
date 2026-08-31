@@ -5,7 +5,7 @@ build/framerate.out: $(OBJECTS) src/main.cpp
 	-lSDL2 -lSDL2_image -lSDL2_ttf \
 	$(OBJECTS) \
 	src/main.cpp \
-	-o build/template.out
+	-o build/framerate.out
 
 # Because I'm just producing object files, I don't need to link the
 # libraries alongisde the object files.
