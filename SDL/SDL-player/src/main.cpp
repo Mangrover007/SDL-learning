@@ -20,6 +20,25 @@ const char* fontPath = "/usr/share/fonts/OTF/ipam.ttf";
 const char* WINDOW_NAME = "HELLO template :D";
 
 
+Uint8 PLAYER_KEYS[4]
+{
+    SDL_SCANCODE_W, // move up
+    SDL_SCANCODE_S, // move down
+    SDL_SCANCODE_A, // move left
+    SDL_SCANCODE_D, // move right
+};
+
+
+#include <unordered_map>
+std::unordered_map<Uint8, MoveDirection> PK_TO_DIR
+{
+    {SDL_SCANCODE_W, MoveDirection::UP},
+    {SDL_SCANCODE_S, MoveDirection::DOWN},
+    {SDL_SCANCODE_A, MoveDirection::LEFT},
+    {SDL_SCANCODE_D, MoveDirection::RIGHT},
+};
+
+
 bool init()
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -95,12 +114,17 @@ void handleEvent(SDL_Event& e)
 }
 
 
+
+
 void mainLoop()
 {
     bool quit = false;
     SDL_Event e;
 
     LPlayer Player = LPlayer("/home/mango/personal/SDL-learning/SDL/SDL-player/assets/player-sprite.png");
+
+    int keyboardSize;
+    const Uint8* keyboardState;
 
     while (quit == false)
     {
@@ -110,49 +134,24 @@ void mainLoop()
 	    {
 		quit = true;
 	    }
-	    else if (e.type == SDL_KEYDOWN)
+	}
+
+	keyboardState = SDL_GetKeyboardState(&keyboardSize);
+
+	bool isMoving = false;
+
+	for (int key{0}; key < 4; key++)
+	{
+	    if (keyboardState[PLAYER_KEYS[key]])
 	    {
-		switch (e.key.keysym.sym)
-		{
-		    case SDLK_w:
-		    case SDLK_s:
-		    case SDLK_a:
-		    case SDLK_d:
-			Player.setMoving(true);
-			if (e.key.keysym.sym == SDLK_w)
-			{
-			    Player.move(MoveDirection::UP);
-			}
-			if (e.key.keysym.sym == SDLK_s)
-			{
-			    Player.move(MoveDirection::DOWN);
-			}
-			if (e.key.keysym.sym == SDLK_a)
-			{
-			    Player.move(MoveDirection::LEFT);
-			}
-			if (e.key.keysym.sym == SDLK_d)
-			{
-			    Player.move(MoveDirection::RIGHT);
-			}
-			break;
-		    default:
-			Player.setMoving(false);
-			break;
-		}
+		isMoving = true;
+		Player.move(PK_TO_DIR[PLAYER_KEYS[key]]);
 	    }
-	    else if (e.type == SDL_KEYUP)
-	    {
-		switch (e.key.keysym.sym)
-		{
-		    case SDLK_w:
-		    case SDLK_s:
-		    case SDLK_a:
-		    case SDLK_d:
-			Player.setMoving(false);
-			break;
-		}
-	    }
+	}
+
+	if (!isMoving)
+	{
+	    Player.setVelocity(0, 0);
 	}
 
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);

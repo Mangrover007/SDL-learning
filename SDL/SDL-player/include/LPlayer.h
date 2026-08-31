@@ -40,7 +40,7 @@ public:
     // expose the render method for player texture
     void render();
 
-    void setMoving(bool isMoving);
+    void setVelocity(int velX, int velY);
 
 private:
     LTexture mPlayerTexture;
@@ -49,7 +49,8 @@ private:
     int mVelX, mVelY;
 
     const int PLAYER_SPEED = 1;
+    const int SPEED_CAP = 8;
 
-    bool mIsMoving;
+    // bool mIsMoving;
 };
 
