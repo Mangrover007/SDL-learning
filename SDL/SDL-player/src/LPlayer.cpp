@@ -16,7 +16,7 @@ void LPlayer::move(MoveDirection direction)
 
 	if (direction == MoveDirection::LEFT)
 	{
-	    mVelX = std::max(-20, mVelY - PLAYER_SPEED);
+	    mVelX = std::max(-20, mVelX - PLAYER_SPEED);
 	}
 
 	if (direction == MoveDirection::RIGHT)
@@ -31,11 +31,11 @@ void LPlayer::render()
     if (mIsMoving)
     {
 	mPosX += mVelX;
-	mPosX = std::min(SCREEN_WIDTH, mPosX);
+	mPosX = std::min(SCREEN_WIDTH - mPlayerTexture.getWidth(), mPosX);
 	mPosX = std::max(0, mPosX);
 
 	mPosY += mVelY;
-	mPosY = std::min(SCREEN_HEIGHT, mPosY);
+	mPosY = std::min(SCREEN_HEIGHT - mPlayerTexture.getHeight(), mPosY);
 	mPosY = std::max(0, mPosY);
     }
     else
@@ -45,6 +45,7 @@ void LPlayer::render()
     }
 
     printf("Rendering player at pos: %d %d\n", mPosX, mPosY);
+    printf("Player velocity: %d %d\n", mVelX, mVelY);
     mPlayerTexture.render(mPosX, mPosY);
 }
 

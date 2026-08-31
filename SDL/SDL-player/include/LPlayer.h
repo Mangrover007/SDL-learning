@@ -48,7 +48,7 @@ private:
     int mPosX, mPosY;
     int mVelX, mVelY;
 
-    const int PLAYER_SPEED = 5;
+    const int PLAYER_SPEED = 1;
 
     bool mIsMoving;
 };

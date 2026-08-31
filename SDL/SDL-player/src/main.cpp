@@ -141,6 +141,18 @@ void mainLoop()
 			break;
 		}
 	    }
+	    else if (e.type == SDL_KEYUP)
+	    {
+		switch (e.key.keysym.sym)
+		{
+		    case SDLK_w:
+		    case SDLK_s:
+		    case SDLK_a:
+		    case SDLK_d:
+			Player.setMoving(false);
+			break;
+		}
+	    }
 	}
 
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
