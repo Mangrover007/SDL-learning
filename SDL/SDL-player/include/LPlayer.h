@@ -34,23 +34,19 @@ public:
     LPlayer();
     LPlayer(const char* sprite);
 
-    // move based on direction: UP DOWN LEFT RIGHT
-    void move(MoveDirection direction);
-
     // expose the render method for player texture
-    void render();
+    void render(Uint8 dt);
 
-    void setVelocity(int velX, int velY);
+    void setPos(float x, float y);
+    float* getPos();
+
+    int getHeight();
+    int getWidth();
 
 private:
     LTexture mPlayerTexture;
 
-    int mPosX, mPosY;
-    int mVelX, mVelY;
-
-    const int PLAYER_SPEED = 1;
-    const int SPEED_CAP = 8;
-
-    // bool mIsMoving;
+public:
+    float mPosX, mPosY;
 };
 

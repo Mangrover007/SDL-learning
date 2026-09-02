@@ -12,12 +12,15 @@ TTF_Font* gFont;
 
 
 #include "../include/LPlayer.h"
-
+#include "../include/LTimer.h"
 #include "../include/globals.h"
 
 
 const char* fontPath = "/usr/share/fonts/OTF/ipam.ttf";
 const char* WINDOW_NAME = "HELLO template :D";
+
+
+const SDL_Color COL_BLACK = SDL_Color{0x00, 0x00, 0x00, 0xFF};
 
 
 Uint8 PLAYER_KEYS[4]
@@ -114,7 +117,7 @@ void handleEvent(SDL_Event& e)
 }
 
 
-
+#include <sstream>
 
 void mainLoop()
 {
@@ -126,8 +129,21 @@ void mainLoop()
     int keyboardSize;
     const Uint8* keyboardState;
 
+    std::stringstream fpsText;
+    LTexture fpsTexture = LTexture();
+
+    Uint64 lastTime = SDL_GetTicks64();
+
     while (quit == false)
     {
+
+	Uint64 startTime = SDL_GetTicks64();
+	Uint64 dt = startTime - lastTime;
+
+	// ---------------------------------------------------- //
+	
+	// need to wrap this entire thing into an update call
+	// which only gets called at fixed time intervals
 	while (SDL_PollEvent(&e) != 0)
 	{
 	    if (e.type == SDL_QUIT)
@@ -136,31 +152,90 @@ void mainLoop()
 	    }
 	}
 
+
 	keyboardState = SDL_GetKeyboardState(&keyboardSize);
 
-	bool isMoving = false;
+	float posX = Player.mPosX;
+	float posY = Player.mPosY;
 
-	for (int key{0}; key < 4; key++)
+	if (keyboardState[SDL_SCANCODE_W])
 	{
-	    if (keyboardState[PLAYER_KEYS[key]])
+	    posY -= PLAYER_SPEED * dt;
+	    if (posY > SCREEN_HEIGHT)
 	    {
-		isMoving = true;
-		Player.move(PK_TO_DIR[PLAYER_KEYS[key]]);
+		posY = SCREEN_HEIGHT - Player.getHeight();
+	    }
+	    if (posY < 0)
+	    {
+		posY = 0;
+	    }
+	}
+	if (keyboardState[SDL_SCANCODE_S])
+	{
+	    posY += PLAYER_SPEED * dt;
+	    if (posY > SCREEN_HEIGHT)
+	    {
+		posY = SCREEN_HEIGHT - Player.getHeight();
+	    }
+	    if (posY < 0)
+	    {
+		posY = 0;
+	    }
+	}
+	if (keyboardState[SDL_SCANCODE_D])
+	{
+	    posX += PLAYER_SPEED * dt;
+	    if (posX > SCREEN_WIDTH)
+	    {
+		posX = SCREEN_WIDTH - Player.getWidth();
+	    }
+	    if (posX < 0)
+	    {
+		posX = 0;
+	    }
+	}
+	if (keyboardState[SDL_SCANCODE_A])
+	{
+	    posX -= PLAYER_SPEED * dt;
+	    if (posX > SCREEN_WIDTH)
+	    {
+		posX = SCREEN_WIDTH - Player.getWidth();
+	    }
+	    if (posX < 0)
+	    {
+		posX = 0;
 	    }
 	}
 
-	if (!isMoving)
-	{
-	    Player.setVelocity(0, 0);
-	}
+	Player.setPos(posX, posY);
+
 
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
 
 	// write code here
-	Player.render();
+	Player.render(dt);
+
+
+	// ---------------------------------------------------- //
+	
+	float frameRate = 1.0 / 10.f;
+
+	fpsText.str("");
+	fpsText << "FPS: " << (1.0 / ((dt) / 1000.f)) << " " << (dt / 1000.f) << " " << frameRate << " " << startTime << " " << lastTime;
+	fpsTexture.loadTTF(fpsText.str(), COL_BLACK);
+	// fpsTexture.render((SCREEN_WIDTH - fpsTexture.getWidth()) / 2, (SCREEN_HEIGHT - fpsTexture.getHeight()) / 2);
 
 	SDL_RenderPresent(gRenderer);
+
+
+	if (dt <= frameRate * 1000)
+	{
+	    // printf("Delaying...\n");
+	    SDL_Delay(frameRate * 1000 - dt);
+	}
+
+	lastTime = startTime;
     }
 
     printf("Exiting main loop...\n");

@@ -1,3 +1,6 @@
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 640
 
+#define PLAYER_SPEED 0.5
+#define PLAYER_SPEED_CAP 4
+
