@@ -93,6 +93,8 @@ void handleEvent(SDL_Event& e)
 }
 
 
+#include "../include/LPlayer.h"
+
 void mainLoop()
 {
     bool quit = false;
@@ -100,6 +102,13 @@ void mainLoop()
 
     Uint64 lastTime = SDL_GetTicks64();
 
+    std::string baseDIR = "/home/mango/personal/SDL-learning/SDL/SDL-dodge-the-creeps/";
+
+    LPlayer Player = LPlayer(std::string(baseDIR + "assets/player.png").c_str());
+    LPlayer Enemy = LPlayer(std::string(baseDIR + "assets/enemy.png").c_str());
+
+    Player.mPosX = (SCREEN_WIDTH - Player.getWidth()) / 2;
+    Player.mPosY = (SCREEN_HEIGHT - Player.getHeight()) / 2;
 
     while (quit == false)
     {
@@ -120,12 +129,13 @@ void mainLoop()
 	    }
 	}
 
-	SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
 
 	// write code here
 
-	
+	Player.render(dt);
+	Enemy.render(dt);
 
 	// -----------------------------------------------------//
 	
