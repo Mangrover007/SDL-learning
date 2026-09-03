@@ -107,18 +107,13 @@ void mainLoop()
     bool quit = false;
     SDL_Event e;
 
-    LTimer fpsTimer = LTimer();
-    int framesCounted = 0;
-
-    int fps = 0;
-
-    fpsTimer.start();
-
     std::stringstream fpsText;
     LTexture fpsTextTexture = LTexture();
 
     while (quit == false)
     {
+	Uint8 startTime = SDL_GetTicks();
+
 	while (SDL_PollEvent(&e) != 0)
 	{
 	    if (e.type == SDL_QUIT)
@@ -135,16 +130,19 @@ void mainLoop()
 	SDL_RenderClear(gRenderer);
 
 	// write code here
-	fps = framesCounted / (fpsTimer.getTicks() / 1000.f);
+	for (int i = 0; i < 1000; i++)
+	{
+	    printf("Hello\n");
+	}
+
+	Uint8 endTime = SDL_GetTicks();
 
 	fpsText.str("");
-	fpsText << "FPS: " << fps;
+	fpsText << "FPS: " << (1.0 / ((endTime - startTime) / 1000.f)) << endTime - startTime;
 	fpsTextTexture.loadTTF(fpsText.str().c_str(), SDL_COLOR_BLACK);
 	fpsTextTexture.render((SCREEN_WIDTH - fpsTextTexture.getWidth()) / 2, (SCREEN_HEIGHT - fpsTextTexture.getHeight()) / 2);
 
 	SDL_RenderPresent(gRenderer);
-
-	framesCounted++;
     }
 
     printf("Exiting main loop...\n");
