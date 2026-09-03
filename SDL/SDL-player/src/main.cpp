@@ -23,15 +23,6 @@ const char* WINDOW_NAME = "HELLO template :D";
 const SDL_Color COL_BLACK = SDL_Color{0x00, 0x00, 0x00, 0xFF};
 
 
-Uint8 PLAYER_KEYS[4]
-{
-    SDL_SCANCODE_W, // move up
-    SDL_SCANCODE_S, // move down
-    SDL_SCANCODE_A, // move left
-    SDL_SCANCODE_D, // move right
-};
-
-
 bool init()
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
