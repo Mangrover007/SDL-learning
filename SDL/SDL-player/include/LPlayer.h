@@ -20,13 +20,6 @@
 // For example, if I press W/A/S/D, the player will move in a certain
 // direction.
 
-enum class MoveDirection
-{
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT
-};
 
 class LPlayer
 {

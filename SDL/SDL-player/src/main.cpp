@@ -32,16 +32,6 @@ Uint8 PLAYER_KEYS[4]
 };
 
 
-#include <unordered_map>
-std::unordered_map<Uint8, MoveDirection> PK_TO_DIR
-{
-    {SDL_SCANCODE_W, MoveDirection::UP},
-    {SDL_SCANCODE_S, MoveDirection::DOWN},
-    {SDL_SCANCODE_A, MoveDirection::LEFT},
-    {SDL_SCANCODE_D, MoveDirection::RIGHT},
-};
-
-
 bool init()
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
