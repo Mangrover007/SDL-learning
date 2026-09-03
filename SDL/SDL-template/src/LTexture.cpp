@@ -28,6 +28,8 @@ bool LTexture::loadFromFile(const std::string& path)
     mHeight = surface->h;
     mWidth = surface->w;
 
+    mTexture = texture;
+
     SDL_FreeSurface(surface);
 
     return true;
