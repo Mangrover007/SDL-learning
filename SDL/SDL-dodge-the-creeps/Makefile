@@ -1,4 +1,4 @@
-OBJECTS=build/LTexture.o build/LPlayer.o build/LTimer.o build/LButton.o
+OBJECTS=build/LTexture.o build/LPlayer.o build/LTimer.o build/LButton.o build/LEntity.o
 
 build/dodge-the-creeps.out: $(OBJECTS) src/main.cpp
 	g++ \
@@ -20,6 +20,9 @@ build/LTimer.o: include/LTimer.h src/LTimer.cpp
 
 build/LPlayer.o: include/LPlayer.h src/LPlayer.cpp
 	g++ -c -I./include/ src/LPlayer.cpp -o build/LPlayer.o
+
+build/LEntity.o: include/LEntity.h src/LEntity.cpp
+	g++ -c -I./include/ src/LEntity.cpp -o build/LEntity.o
 
 # https://stackoverflow.com/questions/2481269/how-to-make-a-simple-c-makefile
 # https://stackoverflow.com/questions/46515755/exactly-what-is-a-symbol-reference-in-an-object-file
