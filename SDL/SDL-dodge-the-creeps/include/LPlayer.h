@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LTexture.h"
+#include "LEntity.h"
 #include "globals.h"
 
 // How do I think the Player class should be like?
@@ -23,27 +23,13 @@
 // direction.
 
 
-class LPlayer
+class LPlayer : public LEntity
 {
 public:
-    LPlayer();
     LPlayer(const char* sprite);
 
-    // expose the render method for player texture
-    void render(Uint8 dt);
+    void render() override;
 
     void setPos(float x, float y);
-
-    int getHeight();
-    int getWidth();
-
-    bool isColliding(SDL_FRect& hitbox);
-
-private:
-    LTexture mPlayerTexture;
-
-public:
-    float mPosX, mPosY;
-    SDL_FRect mHitbox;
 };
 
