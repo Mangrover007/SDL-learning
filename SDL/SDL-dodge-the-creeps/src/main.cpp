@@ -128,6 +128,9 @@ void mainLoop()
 
     float delta = PI;
 
+    float initAngle = (3 * PI) / 4;
+    int initPos = 150;
+
     while (quit == false)
     {
 	Uint64 startTime = SDL_GetTicks64();
@@ -210,10 +213,11 @@ void mainLoop()
 	Player.setPos(posX, posY);
 	Player.render(dt);
 
-	Enemy1.setPos(150 + r * std::cos(angle), 150 + r * std::sin(angle));
+	Enemy1.setPos(initPos + r * std::cos(initAngle), initPos + r * std::sin(initAngle));
 	Enemy2.setPos(450 + r * std::cos(angle + delta), 450 + r * std::sin(angle + delta));
 
 	angle += PI / 180.f;
+	initPos += 1;
 
 	Enemy1.render(dt);
 	Enemy2.render(dt);
