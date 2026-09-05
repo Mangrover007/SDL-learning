@@ -38,13 +38,13 @@ public:
     int getHeight();
     int getWidth();
 
+    bool isColliding(SDL_FRect& hitbox);
 
 private:
     LTexture mPlayerTexture;
-    SDL_FRect hitbox;
-
 
 public:
     float mPosX, mPosY;
+    SDL_FRect mHitbox;
 };
 
