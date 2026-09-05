@@ -108,14 +108,10 @@ void mainLoop()
     LPlayer Enemy1 = LPlayer(std::string(baseDIR + "assets/enemy.png").c_str());
     LPlayer Enemy2 = LPlayer(std::string(baseDIR + "assets/enemy.png").c_str());
 
-    Player.mPosX = (SCREEN_WIDTH - Player.getWidth()) / 2;
-    Player.mPosY = (SCREEN_HEIGHT - Player.getHeight()) / 2;
+    Player.setPos((SCREEN_WIDTH - Player.getWidth()) / 2, (SCREEN_HEIGHT - Player.getHeight()) / 2);
 
-    Enemy1.mPosX = 150;
-    Enemy1.mPosY = 150;
-
-    Enemy2.mPosX = 450;
-    Enemy2.mPosY = 450;
+    Enemy1.setPos(150, 150);
+    Enemy2.setPos(450, 450);
 
     LPlayer* EnemyQueue[] = {&Enemy1, &Enemy2};
     int EnemyQueueSize = 2;
@@ -158,8 +154,8 @@ void mainLoop()
 	// player movement
 	keyboardState = SDL_GetKeyboardState(&keyboardSize);
 
-	float posX = Player.mPosX;
-	float posY = Player.mPosY;
+	float posX = Player.getPosX();
+	float posY = Player.getPosY();
 
 	if (keyboardState[SDL_SCANCODE_W])
 	{
@@ -211,7 +207,7 @@ void mainLoop()
 	}
 
 	Player.setPos(posX, posY);
-	Player.render(dt);
+	Player.render();
 
 	Enemy1.setPos(initPos + r * std::cos(initAngle), initPos + r * std::sin(initAngle));
 	Enemy2.setPos(450 + r * std::cos(angle + delta), 450 + r * std::sin(angle + delta));
@@ -219,12 +215,12 @@ void mainLoop()
 	angle += PI / 180.f;
 	initPos += 1;
 
-	Enemy1.render(dt);
-	Enemy2.render(dt);
+	Enemy1.render();
+	Enemy2.render();
 
 	for (int i = 0; i < EnemyQueueSize; i++)
 	{
-	    if (Player.isColliding(EnemyQueue[i]->mHitbox))
+	    if (Player.isColliding(EnemyQueue[i]->getHitbox()))
 	    {
 		printf("Player died\n");
 		quit = true;
