@@ -33,7 +33,6 @@ public:
     void render(Uint8 dt);
 
     void setPos(float x, float y);
-    float* getPos();
 
     int getHeight();
     int getWidth();
