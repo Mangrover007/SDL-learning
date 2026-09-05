@@ -94,6 +94,7 @@ void handleEvent(SDL_Event& e)
 
 
 #include "../include/LPlayer.h"
+#include "../include/LEnemy.h"
 
 void mainLoop()
 {
@@ -105,27 +106,17 @@ void mainLoop()
     std::string baseDIR = "/home/mango/personal/SDL-learning/SDL/SDL-dodge-the-creeps/";
 
     LPlayer Player = LPlayer(std::string(baseDIR + "assets/player.png").c_str());
-    LPlayer Enemy1 = LPlayer(std::string(baseDIR + "assets/enemy.png").c_str());
-    LPlayer Enemy2 = LPlayer(std::string(baseDIR + "assets/enemy.png").c_str());
+    LEnemy Enemy1 = LEnemy(std::string(baseDIR + "assets/enemy.png").c_str(), 150, 150, -PI / 3);
+    LEnemy Enemy2 = LEnemy(std::string(baseDIR + "assets/enemy.png").c_str(), 450, 450, 0.f);
+    LEnemy Enemy3 = LEnemy(std::string(baseDIR + "assets/enemy.png").c_str(), 450, 450, PI / 2);
 
     Player.setPos((SCREEN_WIDTH - Player.getWidth()) / 2, (SCREEN_HEIGHT - Player.getHeight()) / 2);
 
-    Enemy1.setPos(150, 150);
-    Enemy2.setPos(450, 450);
-
-    LPlayer* EnemyQueue[] = {&Enemy1, &Enemy2};
-    int EnemyQueueSize = 2;
+    LEnemy* EnemyQueue[] = {&Enemy1, &Enemy2, &Enemy3};
+    int EnemyQueueSize = 3;
 
     int keyboardSize;
     const Uint8* keyboardState;
-
-    float r = 100.f;
-    float angle = 0;
-
-    float delta = PI;
-
-    float initAngle = (3 * PI) / 4;
-    int initPos = 150;
 
     while (quit == false)
     {
@@ -209,14 +200,9 @@ void mainLoop()
 	Player.setPos(posX, posY);
 	Player.render();
 
-	Enemy1.setPos(initPos + r * std::cos(initAngle), initPos + r * std::sin(initAngle));
-	Enemy2.setPos(450 + r * std::cos(angle + delta), 450 + r * std::sin(angle + delta));
-
-	angle += PI / 180.f;
-	initPos += 1;
-
 	Enemy1.render();
 	Enemy2.render();
+	Enemy3.render();
 
 	for (int i = 0; i < EnemyQueueSize; i++)
 	{
