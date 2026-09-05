@@ -105,10 +105,28 @@ void mainLoop()
     std::string baseDIR = "/home/mango/personal/SDL-learning/SDL/SDL-dodge-the-creeps/";
 
     LPlayer Player = LPlayer(std::string(baseDIR + "assets/player.png").c_str());
-    LPlayer Enemy = LPlayer(std::string(baseDIR + "assets/enemy.png").c_str());
+    LPlayer Enemy1 = LPlayer(std::string(baseDIR + "assets/enemy.png").c_str());
+    LPlayer Enemy2 = LPlayer(std::string(baseDIR + "assets/enemy.png").c_str());
 
     Player.mPosX = (SCREEN_WIDTH - Player.getWidth()) / 2;
     Player.mPosY = (SCREEN_HEIGHT - Player.getHeight()) / 2;
+
+    Enemy1.mPosX = 150;
+    Enemy1.mPosY = 150;
+
+    Enemy2.mPosX = 450;
+    Enemy2.mPosY = 450;
+
+    LPlayer* EnemyQueue[] = {&Enemy1, &Enemy2};
+    int EnemyQueueSize = 2;
+
+    int keyboardSize;
+    const Uint8* keyboardState;
+
+    float r = 100.f;
+    float angle = 0;
+
+    float delta = PI;
 
     while (quit == false)
     {
@@ -134,8 +152,80 @@ void mainLoop()
 
 	// write code here
 
+	// player movement
+	keyboardState = SDL_GetKeyboardState(&keyboardSize);
+
+	float posX = Player.mPosX;
+	float posY = Player.mPosY;
+
+	if (keyboardState[SDL_SCANCODE_W])
+	{
+	    posY -= PLAYER_SPEED * dt;
+	    if (posY > SCREEN_HEIGHT)
+	    {
+		posY = SCREEN_HEIGHT - Player.getHeight();
+	    }
+	    if (posY < 0)
+	    {
+		posY = 0;
+	    }
+	}
+	if (keyboardState[SDL_SCANCODE_S])
+	{
+	    posY += PLAYER_SPEED * dt;
+	    if (posY > SCREEN_HEIGHT)
+	    {
+		posY = SCREEN_HEIGHT - Player.getHeight();
+	    }
+	    if (posY < 0)
+	    {
+		posY = 0;
+	    }
+	}
+	if (keyboardState[SDL_SCANCODE_D])
+	{
+	    posX += PLAYER_SPEED * dt;
+	    if (posX > SCREEN_WIDTH)
+	    {
+		posX = SCREEN_WIDTH - Player.getWidth();
+	    }
+	    if (posX < 0)
+	    {
+		posX = 0;
+	    }
+	}
+	if (keyboardState[SDL_SCANCODE_A])
+	{
+	    posX -= PLAYER_SPEED * dt;
+	    if (posX > SCREEN_WIDTH)
+	    {
+		posX = SCREEN_WIDTH - Player.getWidth();
+	    }
+	    if (posX < 0)
+	    {
+		posX = 0;
+	    }
+	}
+
+	Player.setPos(posX, posY);
 	Player.render(dt);
-	Enemy.render(dt);
+
+	Enemy1.setPos(150 + r * std::cos(angle), 150 + r * std::sin(angle));
+	Enemy2.setPos(450 + r * std::cos(angle + delta), 450 + r * std::sin(angle + delta));
+
+	angle += PI / 180.f;
+
+	Enemy1.render(dt);
+	Enemy2.render(dt);
+
+	for (int i = 0; i < EnemyQueueSize; i++)
+	{
+	    if (Player.isColliding(EnemyQueue[i]->mHitbox))
+	    {
+		printf("Player died\n");
+		quit = true;
+	    }
+	}
 
 	// -----------------------------------------------------//
 	
