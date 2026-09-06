@@ -62,7 +62,7 @@ bool init()
 	return false;
     }
 
-    gFont = TTF_OpenFont(fontPath, 28);
+    gFont = TTF_OpenFont(fontPath, 56);
 
     if (gFont == nullptr)
     {
@@ -94,6 +94,88 @@ void handleEvent(SDL_Event& e)
 
 
 #include "../include/LPlayer.h"
+#include "../include/LEnemy.h"
+#include <chrono>
+
+#include <unordered_set>
+
+#include <random>
+
+std::string baseDIR = "/home/mango/personal/SDL-learning/SDL/SDL-dodge-the-creeps/";
+
+std::default_random_engine engine(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+std::uniform_real_distribution<double> rng(0.0, 1.0);
+std::uniform_real_distribution<double> angle_top(0.0, PI);
+std::uniform_real_distribution<double> angle_side(-PI / 2, PI / 2);
+std::uniform_int_distribution<int> walls(0, 1);
+
+LEnemy* spawnEnemy(float px, float py)
+{
+    float x, y;
+    float angle;
+
+    // randomly select one of the 4 window edges for spawn
+    int wall = walls(engine);
+
+    // 0 = top
+    // 1 = bottom
+    // 2 = left
+    // 3 = right
+    
+    switch (wall)
+    {
+	case 0:
+	    y = 0;
+	    x = rng(engine) * SCREEN_WIDTH;
+	    break;
+	case 1:
+	    y = SCREEN_HEIGHT - 32;
+	    x = rng(engine) * SCREEN_WIDTH;
+	    break;
+	case 2:
+	    x = 0;
+	    y = rng(engine) * SCREEN_HEIGHT;
+	case 3:
+	    x = SCREEN_WIDTH - 32;
+	    y = rng(engine) * SCREEN_HEIGHT;
+	    break;
+    }
+
+    // calculate enemy line of sight
+    // enemy position: x, y
+    // player position: px, py
+    angle = std::atan(abs(py - y) / abs(px - x));
+
+    if (x > px)
+    {
+	if (y > py)
+	{
+	    angle = PI + angle;
+	}
+	else
+	{
+	    angle = PI - angle;
+	}
+    }
+    else
+    {
+	if (y > py)
+	{
+	    angle = 2 * PI - angle;
+	}
+	else
+	{
+	    angle = angle;
+	}
+    }
+
+    LEnemy* Enemy = new LEnemy(std::string(baseDIR + "assets/enemy.png").c_str(), x, y, angle);
+
+    return Enemy;
+}
+
+
+#include <sstream>
 
 void mainLoop()
 {
@@ -102,30 +184,27 @@ void mainLoop()
 
     Uint64 lastTime = SDL_GetTicks64();
 
-    std::string baseDIR = "/home/mango/personal/SDL-learning/SDL/SDL-dodge-the-creeps/";
+
+    int score = 0;
+    Uint64 scoreTimer = SDL_GetTicks64();
+    std::stringstream scoreText("0");
+    LTexture scoreLabel = LTexture();
+
+    scoreLabel.loadTTF(scoreText.str().c_str(), COL_BLACK);
+
 
     LPlayer Player = LPlayer(std::string(baseDIR + "assets/player.png").c_str());
-    LPlayer Enemy1 = LPlayer(std::string(baseDIR + "assets/enemy.png").c_str());
-    LPlayer Enemy2 = LPlayer(std::string(baseDIR + "assets/enemy.png").c_str());
-
     Player.setPos((SCREEN_WIDTH - Player.getWidth()) / 2, (SCREEN_HEIGHT - Player.getHeight()) / 2);
+    
+    std::unordered_set<LEnemy*> Enemies;
+    std::unordered_set<LEntity*> Entities;
 
-    Enemy1.setPos(150, 150);
-    Enemy2.setPos(450, 450);
+    Entities.insert(&Player);
 
-    LPlayer* EnemyQueue[] = {&Enemy1, &Enemy2};
-    int EnemyQueueSize = 2;
+    Uint64 enemyTimer = SDL_GetTicks64();
 
     int keyboardSize;
     const Uint8* keyboardState;
-
-    float r = 100.f;
-    float angle = 0;
-
-    float delta = PI;
-
-    float initAngle = (3 * PI) / 4;
-    int initPos = 150;
 
     while (quit == false)
     {
@@ -150,6 +229,23 @@ void mainLoop()
 	SDL_RenderClear(gRenderer);
 
 	// write code here
+	
+	if (startTime - enemyTimer >= 0.5 * 1000)
+	{
+	    LEnemy* enemy = spawnEnemy(Player.getPosX(), Player.getPosY());
+	    Enemies.insert(enemy);
+	    Entities.insert(enemy);
+	    enemyTimer = startTime;
+	}
+
+	if (startTime - scoreTimer >= 1 * 1000)
+	{
+	    score += 1;
+	    scoreText.str("");
+	    scoreText << score;
+	    scoreLabel.loadTTF(scoreText.str().c_str(), COL_BLACK);
+	    scoreTimer = startTime;
+	}
 
 	// player movement
 	keyboardState = SDL_GetKeyboardState(&keyboardSize);
@@ -207,24 +303,22 @@ void mainLoop()
 	}
 
 	Player.setPos(posX, posY);
-	Player.render();
 
-	Enemy1.setPos(initPos + r * std::cos(initAngle), initPos + r * std::sin(initAngle));
-	Enemy2.setPos(450 + r * std::cos(angle + delta), 450 + r * std::sin(angle + delta));
-
-	angle += PI / 180.f;
-	initPos += 1;
-
-	Enemy1.render();
-	Enemy2.render();
-
-	for (int i = 0; i < EnemyQueueSize; i++)
+	for (const auto& enemy : Enemies)
 	{
-	    if (Player.isColliding(EnemyQueue[i]->getHitbox()))
+	    if (Player.isColliding(enemy->getHitbox()))
 	    {
 		printf("Player died\n");
 		quit = true;
 	    }
+	}
+
+	// Render all entities
+	scoreLabel.render(0, 0);
+
+	for (const auto& entity: Entities)
+	{
+	    entity->render();
 	}
 
 	// -----------------------------------------------------//
@@ -240,6 +334,8 @@ void mainLoop()
 
 	lastTime = startTime;
     }
+
+    printf("FINAL SCORE: %d\n", score);
 
     printf("Exiting main loop...\n");
 }
