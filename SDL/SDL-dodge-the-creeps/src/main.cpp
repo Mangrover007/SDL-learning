@@ -256,7 +256,7 @@ void mainLoop()
 	if (keyboardState[SDL_SCANCODE_W])
 	{
 	    posY -= PLAYER_SPEED * dt;
-	    if (posY > SCREEN_HEIGHT)
+	    if (posY > SCREEN_HEIGHT - Player.getHeight())
 	    {
 		posY = SCREEN_HEIGHT - Player.getHeight();
 	    }
@@ -268,7 +268,7 @@ void mainLoop()
 	if (keyboardState[SDL_SCANCODE_S])
 	{
 	    posY += PLAYER_SPEED * dt;
-	    if (posY > SCREEN_HEIGHT)
+	    if (posY > SCREEN_HEIGHT - Player.getHeight())
 	    {
 		posY = SCREEN_HEIGHT - Player.getHeight();
 	    }
@@ -280,7 +280,7 @@ void mainLoop()
 	if (keyboardState[SDL_SCANCODE_D])
 	{
 	    posX += PLAYER_SPEED * dt;
-	    if (posX > SCREEN_WIDTH)
+	    if (posX > SCREEN_WIDTH - Player.getWidth())
 	    {
 		posX = SCREEN_WIDTH - Player.getWidth();
 	    }
@@ -292,7 +292,7 @@ void mainLoop()
 	if (keyboardState[SDL_SCANCODE_A])
 	{
 	    posX -= PLAYER_SPEED * dt;
-	    if (posX > SCREEN_WIDTH)
+	    if (posX > SCREEN_WIDTH - Player.getWidth())
 	    {
 		posX = SCREEN_WIDTH - Player.getWidth();
 	    }
