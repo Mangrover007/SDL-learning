@@ -1,4 +1,4 @@
-OBJECTS=build/LTexture.o build/LPlayer.o build/LTimer.o build/LButton.o build/LEntity.o build/LEnemy.o
+OBJECTS=build/LTexture.o build/LPlayer.o build/LEntity.o build/LEnemy.o
 
 build/dodge-the-creeps.out: $(OBJECTS) src/main.cpp
 	g++ \
@@ -11,12 +11,6 @@ build/dodge-the-creeps.out: $(OBJECTS) src/main.cpp
 # libraries alongisde the object files.
 build/LTexture.o: include/LTexture.h src/LTexture.cpp
 	g++ -c -I./include/ src/LTexture.cpp -o build/LTexture.o
-
-build/LButton.o: include/LButton.h src/LButton.cpp
-	g++ -c -I./include/ src/LButton.cpp -o build/LButton.o
-
-build/LTimer.o: include/LTimer.h src/LTimer.cpp
-	g++ -c -I./include/ src/LTimer.cpp -o build/LTimer.o
 
 build/LPlayer.o: include/LPlayer.h src/LPlayer.cpp
 	g++ -c -I./include/ src/LPlayer.cpp -o build/LPlayer.o
