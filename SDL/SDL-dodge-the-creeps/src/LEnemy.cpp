@@ -9,14 +9,17 @@ LEnemy::LEnemy(const char* sprite, float x, float y, float angle) : LEntity {spr
     mMoveAngle = angle;
 }
 
-void LEnemy::render()
+void LEnemy::move()
 {
     mPosX += (speed * std::cos(mMoveAngle));
     mPosY += (speed * std::sin(mMoveAngle));
 
     mHitbox.x = mPosX;
     mHitbox.y = mPosY;
+}
 
+void LEnemy::render()
+{
     mTexture.render(mPosX, mPosY);
 }
 

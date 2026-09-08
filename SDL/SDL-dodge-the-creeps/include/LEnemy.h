@@ -13,6 +13,7 @@ public:
     LEnemy(const char* sprite, float x, float y, float angle);
 
     void render() override;
+    void move();
 
 private:
     float mMoveAngle;
