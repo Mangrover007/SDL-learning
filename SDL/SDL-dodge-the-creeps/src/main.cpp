@@ -176,6 +176,7 @@ LEnemy* spawnEnemy(float px, float py)
 
 
 #include <sstream>
+#include <stack>
 
 void mainLoop()
 {
@@ -198,6 +199,8 @@ void mainLoop()
     
     std::unordered_set<LEnemy*> Enemies;
     std::unordered_set<LEntity*> Entities;
+
+    std::stack<LEntity*> enemyCleanup;
 
     Entities.insert(&Player);
 
@@ -316,7 +319,33 @@ void mainLoop()
 	// Render all entities
 	scoreLabel.render(0, 0);
 
-	for (const auto& entity: Entities)
+	for (const auto& enemy : Enemies )
+	{
+	    enemy->move();
+
+	    float entityPosX = enemy->getPosX();
+	    float entityPosY = enemy->getPosY();
+
+	    if (entityPosX + enemy->getWidth() < 0 || entityPosX > SCREEN_WIDTH)
+	    {
+		enemyCleanup.push(enemy);
+	    }
+	    else if (entityPosY + enemy->getHeight() < 0 || entityPosY > SCREEN_HEIGHT)
+	    {
+		enemyCleanup.push(enemy);
+	    }
+	}
+
+	while (enemyCleanup.empty() == false)
+	{
+	    auto enemy = enemyCleanup.top();
+	    enemyCleanup.pop();
+
+	    Enemies.erase((LEnemy*) enemy);
+	    Entities.erase(enemy);
+	}
+
+	for (const auto& entity : Entities)
 	{
 	    entity->render();
 	}
