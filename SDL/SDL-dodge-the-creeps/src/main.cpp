@@ -343,6 +343,8 @@ void mainLoop()
 
 	    Enemies.erase((LEnemy*) enemy);
 	    Entities.erase(enemy);
+
+	    delete (LEnemy*) enemy;
 	}
 
 	for (const auto& entity : Entities)
