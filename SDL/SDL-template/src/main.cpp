@@ -6,9 +6,6 @@
 #include <stdio.h>
 
 
-#include "../include/LButton.h"
-
-
 SDL_Window* gWindow;
 SDL_Renderer* gRenderer;
 TTF_Font* gFont;
@@ -65,7 +62,7 @@ bool init()
 	return false;
     }
 
-    gFont = TTF_OpenFont(fontPath, 28);
+    gFont = TTF_OpenFont(fontPath, 56);
 
     if (gFont == nullptr)
     {
@@ -101,8 +98,20 @@ void mainLoop()
     bool quit = false;
     SDL_Event e;
 
+    Uint64 lastTime = SDL_GetTicks64();
+
+    int keyboardSize;
+    const Uint8* keyboardState;
+
+    float frameRate = 1.f / 60.f;
+
     while (quit == false)
     {
+	Uint64 startTime = SDL_GetTicks64();
+	Uint64 dt = startTime - lastTime;
+
+	// -----------------------------------------------------//
+	
 	while (SDL_PollEvent(&e) != 0)
 	{
 	    if (e.type == SDL_QUIT)
@@ -115,16 +124,27 @@ void mainLoop()
 	    }
 	}
 
-	SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
 
 	// write code here
+	
 
+	// -----------------------------------------------------//
+	
 	SDL_RenderPresent(gRenderer);
+	
+	if (dt <= frameRate * 1000)
+	{
+	    SDL_Delay(frameRate * 1000 - dt);
+	}
+
+	lastTime = startTime;
     }
 
     printf("Exiting main loop...\n");
 }
+
 
 int main(int argc, char** argv)
 {

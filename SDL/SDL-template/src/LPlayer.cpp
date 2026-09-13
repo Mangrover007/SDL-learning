@@ -1,45 +1,22 @@
 #include "../include/LPlayer.h"
 
-
-void LPlayer::render(Uint8 dt)
+LPlayer::LPlayer(const char* sprite) : LEntity {sprite}
 {
-    mPlayerTexture.render(mPosX, mPosY);
 }
-
-
-LPlayer::LPlayer()
-{
-    mPosX = 0;
-    mPosY = 0;
-}
-
-
-LPlayer::LPlayer(const char* sprite)
-{
-    mPlayerTexture = LTexture();
-    mPlayerTexture.loadFromFile(sprite);
-
-    mPosX = 0;
-    mPosY = 0;
-}
-
 
 void LPlayer::setPos(float x, float y)
 {
     mPosX = x;
     mPosY = y;
+
+    mHitbox.x = x;
+    mHitbox.y = y;
 }
 
-
-int LPlayer::getHeight()
+void LPlayer::render()
 {
-    return mPlayerTexture.getHeight();
+    mTexture.render(mPosX, mPosY);
+    mHitbox.x = mPosX;
+    mHitbox.y = mPosY;
 }
-
-
-int LPlayer::getWidth()
-{
-    return mPlayerTexture.getWidth();
-}
-
 
