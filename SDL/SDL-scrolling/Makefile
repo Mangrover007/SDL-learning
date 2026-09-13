@@ -1,4 +1,4 @@
-OBJECTS=build/LTexture.o build/LButton.o build/LTimer.o build/LEnemy.o build/LEntity.o build/LPlayer.o
+OBJECTS=build/LTexture.o build/LEntity.o build/LDot.o
 
 build/template.out: $(OBJECTS) src/main.cpp
 	g++ \
@@ -12,20 +12,11 @@ build/template.out: $(OBJECTS) src/main.cpp
 build/LTexture.o: include/LTexture.h src/LTexture.cpp
 	g++ -c -I./include/ src/LTexture.cpp -o build/LTexture.o
 
-build/LButton.o: include/LButton.h src/LButton.cpp
-	g++ -c -I./include/ src/LButton.cpp -o build/LButton.o
-
-build/LTimer.o: include/LTimer.h src/LTimer.cpp
-	g++ -c -I./include/ src/LTimer.cpp -o build/LTimer.o
-
-build/LEnemy.o: include/LEnemy.h src/LEnemy.cpp
-	g++ -c -I./include/ src/LEnemy.cpp -o build/LEnemy.o
-
-build/LEntity.o: include/LEntity.h src/LEntity.cpp
+build/LEntity.o: include/LEntity.h src/LEntity.cpp build/LTexture.o
 	g++ -c -I./include/ src/LEntity.cpp -o build/LEntity.o
 
-build/LPlayer.o: include/LPlayer.h src/LPlayer.cpp
-	g++ -c -I./include/ src/LPlayer.cpp -o build/LPlayer.o
+build/LDot.o: include/LDot.h src/LDot.cpp build/LEntity.o
+	g++ -c -I./include/ src/LDot.cpp -o build/LDot.o
 
 # https://stackoverflow.com/questions/2481269/how-to-make-a-simple-c-makefile
 # https://stackoverflow.com/questions/46515755/exactly-what-is-a-symbol-reference-in-an-object-file

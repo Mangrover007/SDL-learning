@@ -13,7 +13,7 @@ class LTexture
 public:
     LTexture();
 
-    void render(int posX, int posY);
+    void render(int posX, int posY, SDL_Rect* srcRect = nullptr, SDL_Rect* destRect = nullptr);
 
     // Load image into a SDL_Texture
     bool loadFromFile(const std::string& path);

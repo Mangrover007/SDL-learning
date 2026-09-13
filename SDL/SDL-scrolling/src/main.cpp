@@ -93,6 +93,9 @@ void handleEvent(SDL_Event& e)
 }
 
 
+#include "../include/LTexture.h"
+#include "../include/LDot.h"
+
 void mainLoop()
 {
     bool quit = false;
@@ -104,6 +107,16 @@ void mainLoop()
     const Uint8* keyboardState;
 
     float frameRate = 1.f / 60.f;
+
+    LTexture background = LTexture();
+    background.loadFromFile("/home/mango/personal/SDL-learning/SDL/SDL-scrolling/assets/cute-pokemon.png");
+
+    LDot player = LDot{};
+
+    SDL_Rect camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+
+    const int LEVEL_WIDTH = background.getWidth();
+    const int LEVEL_HEIGHT = background.getHeight();
 
     while (quit == false)
     {
@@ -124,11 +137,94 @@ void mainLoop()
 	    }
 	}
 
+	// write code here
+	
+	// updating stuff
+	// player movement
+	keyboardState = SDL_GetKeyboardState(&keyboardSize);
+
+	float posX = player.getPosX();
+	float posY = player.getPosY();
+
+	if (keyboardState[SDL_SCANCODE_W])
+	{
+	    posY -= PLAYER_SPEED * dt;
+	    if (posY > LEVEL_HEIGHT - player.getHeight())
+	    {
+		posY = LEVEL_HEIGHT - player.getHeight();
+	    }
+	    if (posY < 0)
+	    {
+		posY = 0;
+	    }
+	}
+	if (keyboardState[SDL_SCANCODE_S])
+	{
+	    posY += PLAYER_SPEED * dt;
+	    if (posY > LEVEL_HEIGHT - player.getHeight())
+	    {
+		posY = LEVEL_HEIGHT - player.getHeight();
+	    }
+	    if (posY < 0)
+	    {
+		posY = 0;
+	    }
+	}
+	if (keyboardState[SDL_SCANCODE_D])
+	{
+	    posX += PLAYER_SPEED * dt;
+	    if (posX > LEVEL_WIDTH - player.getWidth())
+	    {
+		posX = LEVEL_WIDTH - player.getWidth();
+	    }
+	    if (posX < 0)
+	    {
+		posX = 0;
+	    }
+	}
+	if (keyboardState[SDL_SCANCODE_A])
+	{
+	    posX -= PLAYER_SPEED * dt;
+	    if (posX > LEVEL_WIDTH - player.getWidth())
+	    {
+		posX = LEVEL_WIDTH - player.getWidth();
+	    }
+	    if (posX < 0)
+	    {
+		posX = 0;
+	    }
+	}
+
+	player.setPos(posX, posY);
+
+	camera.x = posX - (camera.w) / 2;
+	camera.y = posY - (camera.h) / 2;
+
+	if (camera.x < 0)
+	{
+	    camera.x = 0;
+	}
+	if (camera.x + camera.w > LEVEL_WIDTH)
+	{
+	    camera.x = LEVEL_WIDTH - camera.w;
+	}
+
+	if (camera.y < 0)
+	{
+	    camera.y = 0;
+	}
+	if (camera.y + camera.h > LEVEL_HEIGHT)
+	{
+	    camera.y = LEVEL_HEIGHT - camera.h;
+	}
+
+	// rendering stuff
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(gRenderer);
 
-	// write code here
-	
+	// background.render((SCREEN_WIDTH - background.getWidth()) / 2, (SCREEN_HEIGHT - background.getHeight()) / 2, &camera);
+	background.render(0, 0, &camera);
+	player.render(camera.x, camera.y);
 
 	// -----------------------------------------------------//
 	
