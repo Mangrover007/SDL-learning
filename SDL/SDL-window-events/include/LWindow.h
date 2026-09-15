@@ -11,7 +11,11 @@ public:
     SDL_Renderer* createRenderer();
     void free();
 
+    void handleEvents(SDL_Event& e);
+
 private:
     SDL_Window* mWindow;
+
+    bool mFullscreen;
 };
 
