@@ -13,6 +13,8 @@ public:
 
     void handleEvents(SDL_Event& e);
 
+    void getWindowSize(int* width, int* height);
+
 private:
     SDL_Window* mWindow;
 

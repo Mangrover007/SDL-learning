@@ -16,7 +16,7 @@ bool LWindow::init()
 		SDL_WINDOWPOS_UNDEFINED,
 		SCREEN_WIDTH,
 		SCREEN_HEIGHT,
-		SDL_WINDOW_SHOWN
+		SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
 	    );
 
     if (mWindow == nullptr)
@@ -66,19 +66,36 @@ void LWindow::handleEvents(SDL_Event& e)
     }
     */
 
-    if (e.key.keysym.sym == SDLK_RETURN && (e.key.keysym.mod & KMOD_ALT))
+    switch (e.type)
     {
-	if (mFullscreen == false)
-	{
-	    SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN);
-	    mFullscreen = true;
-	}
-	else
-	{
-	    SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_MINIMIZED);
-	    mFullscreen = false;
-	}
+	case SDL_WINDOWEVENT:
+	    if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+	    {
+		printf("Window size changed!\n");
+		printf("New width: %d, New Height: %d\n", e.window.data1, e.window.data2);
+	    }
+	case SDL_KEYDOWN:
+	    if (e.key.keysym.sym == SDLK_RETURN && (e.key.keysym.mod & KMOD_ALT))
+	    {
+		if (mFullscreen == false)
+		{
+		    SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		    mFullscreen = true;
+		}
+		else
+		{
+		    SDL_SetWindowFullscreen(mWindow, SDL_WINDOW_MINIMIZED);
+		    mFullscreen = false;
+		}
+	    }
     }
+    
+}
+
+
+void LWindow::getWindowSize(int* width, int* height)
+{
+    SDL_GetWindowSize(mWindow, width, height);
 }
 
 
