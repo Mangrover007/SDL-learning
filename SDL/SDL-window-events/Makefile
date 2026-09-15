@@ -1,6 +1,6 @@
 OBJECTS=build/LWindow.o
 
-build/timer.out: $(OBJECTS) src/main.cpp
+build/window-events.out: $(OBJECTS) src/main.cpp
 	g++ \
 	-lSDL2 -lSDL2_image \
 	$(OBJECTS) \
